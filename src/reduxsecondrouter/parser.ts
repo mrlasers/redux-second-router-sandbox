@@ -6,6 +6,54 @@ export function doNothing() {
 
 export const matchButtholes = match('/buttholes/:id?')
 
+// src for ExtractRouteParams: https://bit.ly/3KSF22g
+type ExtractRouteParams<T extends string> = string extends T
+  ? Record<string, string>
+  : (T extends `${infer Start}:${infer Param}/${infer Rest}`
+    ? { [k in Param | keyof ExtractRouteParams<Rest>]: string }
+    : (T extends `${infer Start}:${infer Param}`
+      ? { [k in Param]: string }
+      : {}))
+
+
+
+function _compile<Path extends string>(
+  path: Path,
+  data: ExtractRouteParams<Path>
+) {
+  return compile(path, data)
+}
+
+function compileParams<Path extends string>(path: Path) {
+  return (data: ExtractRouteParams<Path>) => {
+    return data
+  }
+}
+
+type ExtractOptionalShit<T extends string> = T extends `/${infer start}?` ? { [key in start]?: string } : T extends `/${infer start}` ?  {[key in start]: string} : {}
+
+function boopCompile<Path extends string(path: Path) {
+  return (data: ExtractOptionalShit<Path>) => {
+    return data
+  }
+}
+
+const boop = boopCompile('/hello?')({hello: 'boop'})
+
+const actionCreator = compileParams('/users/:view/:id?')
+
+const record: Record<string, string> = { hello: 'world' }
+
+const $compile = _compile('/users/:userId', { userId: 'mrlasers' })
+
+// compile('/user/:id', { id: 'foo' })
+
+// // Unknown path parameter.
+// compile('/user/:id', { id: 'foo', bar: '2' })
+
+// // Missing path parameter.
+// compile('/user/:id', {})
+
 export type RoutesMap = {
   [key: string]: string
 }
