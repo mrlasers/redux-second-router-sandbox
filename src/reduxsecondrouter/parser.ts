@@ -9,13 +9,11 @@ export const matchButtholes = match('/buttholes/:id?')
 // src for ExtractRouteParams: https://bit.ly/3KSF22g
 type ExtractRouteParams<T extends string> = string extends T
   ? Record<string, string>
-  : (T extends `${infer Start}:${infer Param}/${infer Rest}`
-    ? { [k in Param | keyof ExtractRouteParams<Rest>]: string }
-    : (T extends `${infer Start}:${infer Param}`
-      ? { [k in Param]: string }
-      : {}))
-
-
+  : T extends `${infer Start}:${infer Param}/${infer Rest}`
+  ? { [k in Param | keyof ExtractRouteParams<Rest>]: string }
+  : T extends `${infer Start}:${infer Param}`
+  ? { [k in Param]: string }
+  : {}
 
 function _compile<Path extends string>(
   path: Path,
@@ -30,15 +28,19 @@ function compileParams<Path extends string>(path: Path) {
   }
 }
 
-type ExtractOptionalShit<T extends string> = T extends `/${infer start}?` ? { [key in start]?: string } : T extends `/${infer start}` ?  {[key in start]: string} : {}
+type ExtractOptionalShit<T extends string> = T extends `/${infer start}?`
+  ? { [key in start]?: string }
+  : T extends `/${infer start}`
+  ? { [key in start]: string }
+  : {}
 
-function boopCompile<Path extends string(path: Path) {
+function boopCompile<Path extends string>(path: Path) {
   return (data: ExtractOptionalShit<Path>) => {
     return data
   }
 }
 
-const boop = boopCompile('/hello?')({hello: 'boop'})
+const boop = boopCompile('/hello?')({ hello: 'boop' })
 
 const actionCreator = compileParams('/users/:view/:id?')
 
